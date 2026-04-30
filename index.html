@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BUSINESS ADS - Plateforme d'affiliation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ========== STYLES COMPLETS (identiques à la version précédente) ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); min-height: 100vh; color: #fff; }
+        .top-nav { background: rgba(10,14,39,0.98); backdrop-filter: blur(10px); padding: 0.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 1rem; }
+        .brand-logo .main { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .brand-logo .slogan { font-size: 0.55rem; color: #aaa; }
+        .brand-logo .tags { font-size: 0.5rem; color: #4ecdc4; }
+        .top-nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .top-nav-links a { color: #ddd; text-decoration: none; font-size: 0.9rem; cursor: pointer; transition: color 0.2s; }
+        .top-nav-links a:hover { color: #4ecdc4; }
+        .services-nav { background: rgba(26,31,58,0.9); padding: 0.5rem 2rem; display: flex; justify-content: center; gap: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
+        .services-nav a { color: #ccc; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 0.3rem 0; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s; }
+        .services-nav a:hover, .services-nav a.active-service { color: #4ecdc4; border-bottom-color: #4ecdc4; }
+        .navbar { background: rgba(10,14,39,0.98); backdrop-filter: blur(10px); padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 0.5rem; }
+        .logo { display: flex; align-items: center; gap: 0.5rem; }
+        .navbar-brand .main { font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .navbar-brand .slogan { font-size: 0.45rem; color: #aaa; }
+        .nav-links { display: flex; gap: 0.2rem; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: #fff; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 10px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem; transition: 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(78,205,196,0.2); color: #4ecdc4; }
+        .user-info { display: flex; align-items: center; gap: 0.8rem; background: rgba(255,255,255,0.08); padding: 0.3rem 0.8rem; border-radius: 50px; }
+        .balance { color: #4ecdc4; font-weight: bold; font-size: 0.9rem; }
+        .logout-btn { background: rgba(255,71,87,0.2); color: #ff4757; padding: 0.2rem 0.6rem; border-radius: 50px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .logout-btn:hover { background: rgba(255,71,87,0.4); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .welcome-card { background: linear-gradient(145deg, #1e2a5e, #0f172a); border-radius: 24px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border: 1px solid rgba(255,215,0,0.2); }
+        .welcome-left h2 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+        .welcome-left p { color: #aaa; }
+        .welcome-right { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .btn-export { background: #4ecdc4; color: #0a0e27; border: none; padding: 0.5rem 1rem; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-export:hover { opacity: 0.8; }
+        .balances-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .balance-card { background: rgba(255,255,255,0.05); border-radius: 24px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s; }
+        .balance-card:hover { transform: translateY(-5px); }
+        .balance-card .amount { font-size: 2.2rem; font-weight: bold; background: linear-gradient(135deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 1.2rem; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card .value { font-size: 1.6rem; font-weight: bold; background: linear-gradient(135deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .section { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 1.2rem; margin-bottom: 1.5rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b6b, #4ecdc4); color: white; padding: 0.5rem 1rem; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-wave { background: #3b82f6; color: white; width: 100%; justify-content: center; padding: 0.7rem; border-radius: 12px; border: none; cursor: pointer; }
+        .form-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 1.5rem; max-width: 500px; margin: 0 auto; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #ccc; font-size: 0.85rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: #fff; }
+        .btn-block { width: 100%; justify-content: center; }
+        .badge-success { background: rgba(0,210,91,0.2); color: #00d25b; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; }
+        .badge-pending { background: rgba(255,193,7,0.2); color: #ffc107; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; }
+        .alert { padding: 0.8rem; border-radius: 12px; margin-bottom: 1rem; font-size: 0.85rem; }
+        .alert-error { background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff4757; }
+        .alert-success { background: rgba(0,210,91,0.2); border: 1px solid #00d25b; color: #00d25b; }
+        .empty-state { text-align: center; padding: 2rem; color: #888; }
+        .auth-container { max-width: 450px; margin: 0 auto; padding: 1rem; }
+        .auth-card { background: rgba(255,255,255,0.05); border-radius: 24px; padding: 1.5rem; }
+        .auth-header { text-align: center; margin-bottom: 1.5rem; }
+        .virtual-card { background: linear-gradient(135deg, #1e2a5e, #0f172a); border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(255,215,0,0.3); margin-bottom: 1rem; }
+        .card-number { font-family: monospace; font-size: 1.1rem; letter-spacing: 1px; background: rgba(0,0,0,0.3); display: inline-block; padding: 0.3rem 0.8rem; border-radius: 10px; margin: 0.5rem 0; }
+        .link-copy { display: flex; gap: 0.5rem; align-items: center; }
+        .link-copy input { flex: 1; padding: 0.5rem; background: rgba(0,0,0,0.3); border-radius: 8px; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-copy { background: rgba(78,205,196,0.2); border: none; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; color: #4ecdc4; transition: 0.2s; }
+        .btn-copy:hover { background: rgba(78,205,196,0.4); }
+        .payment-methods { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .payment-card { flex: 1; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 0.8rem; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .payment-card.selected { border: 2px solid #3b82f6; background: rgba(59,130,246,0.1); }
+        .preset-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .preset-btn { background: rgba(255,255,255,0.1); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; border: none; color: white; font-size: 0.8rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.8rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        th { color: #aaa; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #1a1f3a; border-radius: 24px; padding: 1.5rem; max-width: 400px; width: 90%; }
+        .btn-close { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; float: right; }
+        .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        .confirmation-box { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 1.2rem; margin: 1rem 0; }
+        .video-card { transition: transform 0.2s; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 1rem; border: 1px solid rgba(255,255,255,0.1); }
+        .video-card:hover { transform: translateY(-5px); }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        canvas { max-height: 300px; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 1rem; }
+        .payment-buttons { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center; }
+        .whatsapp-float { position: fixed; bottom: 20px; right: 20px; background-color: #25D366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none; color: white; transition: transform 0.2s; }
+        .whatsapp-float:hover { transform: scale(1.05); }
+        @media (max-width: 768px) { .navbar { flex-direction: column; } .nav-links { justify-content: center; } .stats-grid { grid-template-columns: 1fr; } .welcome-card { flex-direction: column; text-align: center; } .welcome-right { margin-top: 1rem; } }
+    </style>
+</head>
+<body>
+
+<div class="top-nav" id="topNavPublic">
+    <div class="brand-logo">
+        <div class="main">BUSINESS ADS</div>
+        <div class="slogan">BOOSTEZ VOTRE BUSINESS, ATTEIGNEZ PLUS LOIN</div>
+        <div class="tags">PUBLICITÉ • MARKETING • PERFORMANCE</div>
+    </div>
+    <div class="top-nav-links">
+        <a onclick="showPublicPage('home')">Accueil</a>
+        <a onclick="showPublicPage('about')">À propos</a>
+        <a id="topLoginBtn" onclick="showAuthPage()">Connexion</a>
+        <span id="topUserInfo" style="display:none;"><span id="topUsername"></span><a onclick="logout()" style="margin-left:1rem;">Déconnexion</a></span>
+    </div>
+</div>
+
+<div class="services-nav" id="servicesNav" style="display: none;">
+    <a onclick="showService('formations')"><i class="fas fa-graduation-cap"></i> Formations</a>
+    <a onclick="showService('ebook')"><i class="fas fa-book"></i> Ebook</a>
+</div>
+
+<nav class="navbar" id="navbar" style="display: none;">
+    <div class="logo">
+        <div class="navbar-brand">
+            <div class="main">BUSINESS ADS</div>
+            <div class="slogan">BOOSTEZ VOTRE BUSINESS</div>
+        </div>
+        <p style="font-size:0.6rem; color:#aaa;">Cartes Virtuelles</p>
+    </div>
+    <div class="nav-links">
+        <a onclick="showPage('dashboard')"><i class="fas fa-home"></i> Dashboard</a>
+        <a onclick="showPage('card')"><i class="fas fa-credit-card"></i> Ma Carte</a>
+        <a onclick="showPage('transfer')"><i class="fas fa-exchange-alt"></i> Transfert</a>
+        <a onclick="showPage('deposit')"><i class="fas fa-wallet"></i> Dépôt</a>
+        <a onclick="showPage('withdraw')"><i class="fas fa-money-bill-wave"></i> Retrait</a>
+        <a onclick="showPage('links')"><i class="fas fa-link"></i> Liens</a>
+        <div class="user-info"><span id="navUsername"></span><span class="balance" id="navBalance">0 FCFA</span><span class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></span></div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Page connexion + inscription -->
+    <div id="authPage" class="page active">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header"><h1>📢 BUSINESS ADS</h1><p>Cartes Virtuelles & Affiliation</p></div>
+                <div id="authError" class="alert alert-error" style="display: none;"></div>
+                <div id="authSuccess" class="alert alert-success" style="display: none;"></div>
+                <form id="loginForm" onsubmit="login(event)">
+                    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" required></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPassword" required></div>
+                    <button type="submit" class="btn-primary btn-block">Se connecter</button>
+                </form>
+                <div style="text-align: center; margin: 1rem; color: #888;">ou</div>
+                <form id="registerForm" onsubmit="register(event)">
+                    <div class="form-group"><label>Nom d'utilisateur</label><input type="text" id="regUsername" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="regEmail" required></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="regPassword" required></div>
+                    <div class="form-group"><label>Numéro Wave (retraits)</label><input type="tel" id="regWaveNumber" placeholder="Ex: 87379715" required></div>
+                    <div class="form-group"><label>Code Parrain (optionnel)</label><input type="text" id="regSponsorCode" placeholder="Code de parrainage"></div>
+                    <button type="submit" class="btn-primary btn-block">S'inscrire</button>
+                </form>
+                <!-- Lien vers le groupe WhatsApp (remplace l'affichage des identifiants) -->
+                <div style="text-align:center; margin-top:1rem; font-size:0.8rem;">
+                    <a href="#" onclick="window.open('https://chat.whatsapp.com/EGHqESo6baJKbABEDmw5Jk?mode=gi_t', '_blank'); return false;" style="color:#4ecdc4; text-decoration:none;">📱 Rejoindre le groupe WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardPage" class="page">
+        <div class="welcome-card">
+            <div class="welcome-left"><h2>Bienvenue, <span id="welcomeUsername">...</span></h2><p><i class="far fa-calendar-alt"></i> Membre depuis <span id="memberSince">...</span></p></div>
+            <div class="welcome-right">
+                <div><div class="label">Filleuls</div><div class="value" id="referralCount">0</div></div>
+                <div><div class="label">Code parrainage</div><div class="value" id="referralCodeDisplay" style="font-size:1rem;">---</div></div>
+                <button class="btn-export" onclick="exportAllData()"><i class="fas fa-download"></i> Export CSV</button>
+            </div>
+        </div>
+        <div class="balances-grid">
+            <div class="balance-card"><h3>Solde Principal</h3><div class="amount" id="dashboardBalance">0 FCFA</div><small>Disponible pour retrait</small></div>
+            <div class="balance-card"><h3>Total Retraits</h3><div class="amount" id="totalWithdrawnDashboard">0 FCFA</div><small>Cumul des retraits validés</small></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>🖱️ Clics totaux</h3><div class="value" id="dashboardClicks">0</div></div>
+            <div class="stat-card"><h3>👥 Filleuls</h3><div class="value" id="referralCountDashboard">0</div></div>
+            <div class="stat-card"><h3>💰 Gains parrainage</h3><div class="value" id="referralEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>🖱️ Gains clics</h3><div class="value" id="clickEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>📈 Gains totaux</h3><div class="value" id="dashboardEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>🔗 Liens actifs</h3><div class="value" id="activeLinksCount">0</div></div>
+        </div>
+        <div class="section">
+            <div class="section-header"><h2>📊 Évolution de mes gains (7 derniers jours)</h2></div>
+            <canvas id="earningsChart" width="400" height="200"></canvas>
+        </div>
+        <div class="section"><div class="section-header"><h2>📋 Activité récente (clics)</h2></div><table id="recentClicksTable"><thead><tr><th>Date</th><th>Lien</th><th>Gain</th></tr></thead><tbody><tr><td colspan="3" class="empty-state">Aucun clic</td></tr></tbody></table></div>
+        <div class="section"><div class="section-header"><h2>👥 Derniers filleuls inscrits</h2></div><table id="recentReferralsTable"><thead><tr><th>Date</th><th>Nom</th><th>Email</th></tr></thead><tbody><tr><td colspan="3" class="empty-state">Aucun filleul</td></tr></tbody></table></div>
+        <div class="section"><div class="section-header"><h2>🏆 Mon lien le plus performant</h2></div><div id="topLinkInfo" class="empty-state">Aucun lien créé.</div></div>
+        <div id="adminUsersSection" style="display: none;" class="section"><div class="section-header"><h2><i class="fas fa-users"></i> Tous les utilisateurs inscrits</h2></div><table id="allUsersTable"><thead><tr><th>Nom</th><th>Email</th><th>Solde</th><th>Date</th><th>Code parrainage</th><th>Filleuls</th></tr></thead><tbody><tr><td colspan="6" class="empty-state">Chargement...</td></tr></tbody></table></div>
+    </div>
+
+    <!-- Ma Carte Virtuelle -->
+    <div id="cardPage" class="page"><h1>💳 Ma Carte Virtuelle</h1><div class="stats-grid"><div class="stat-card"><h3>💰 Solde</h3><div class="value" id="cardBalance">0 FCFA</div></div></div><div class="form-card"><div class="virtual-card"><div style="display:flex;justify-content:space-between;"><span>BUSINESS ADS</span><i class="fas fa-credit-card"></i></div><div class="card-number" id="cardNumberDisplay"></div><div style="display:flex;justify-content:space-between; margin-top:0.8rem;"><div><span>TITULAIRE</span><br><span id="cardHolderName"></span></div><div><span>VALIDITÉ</span><br><span id="cardExpiry">12/28</span></div><div><span>CVV</span><br><span id="cardCvv">---</span></div></div></div><div class="link-copy"><input type="text" id="cardCodeInput" readonly><button class="btn-copy" onclick="copyCardCode()">Copier</button></div><p style="font-size:0.7rem; text-align:center;">🔑 Utilisez ce code pour recevoir des transferts</p></div><div class="section"><h2>📥 Transferts reçus</h2><table id="receivedTransfersTable"><thead><tr><th>Date</th><th>De</th><th>Montant</th></tr></thead><tbody><tr><td colspan="3" class="empty-state">Aucun transfert</td></tr></tbody></table></div></div>
+
+    <!-- Transfert -->
+    <div id="transferPage" class="page"><h1>🔄 Transférer</h1><div class="stats-grid"><div class="stat-card"><h3>💰 Votre solde</h3><div class="value" id="transferBalance">0 FCFA</div></div></div><div class="form-card"><form id="transferForm"><div class="form-group"><label>🔑 Code carte destinataire</label><input type="text" id="recipientCardCode" required placeholder="Ex: BAD-XXXX-XXXX"></div><div class="form-group"><label>💰 Montant (FCFA)</label><input type="number" id="transferAmount" min="1000" required></div><div class="form-group"><label>📝 Message (optionnel)</label><input type="text" id="transferMessage"></div><button type="submit" class="btn-primary btn-block">Transférer</button></form></div><div class="section"><h2>📤 Transferts envoyés</h2><table id="sentTransfersTable"><thead><tr><th>Date</th><th>À</th><th>Montant</th></tr></thead><tbody><tr><td colspan="3" class="empty-state">Aucun transfert</td></tr></tbody></table></div></div>
+
+    <!-- Dépôt -->
+    <div id="depositPage" class="page"><h1>📥 Déposer de l'argent</h1><div class="stats-grid"><div class="stat-card"><h3>💰 Solde actuel</h3><div class="value" id="depositBalance">0 FCFA</div></div></div><div class="form-card"><div class="payment-methods"><div class="payment-card wave selected" onclick="selectDepositMethod('wave')" id="waveDepositCard"><i class="fas fa-mobile-alt"></i><h3>Wave Money</h3><small>Compte: 87379715</small></div><div class="payment-card paypal" onclick="selectDepositMethod('paypal')" id="paypalDepositCard"><i class="fab fa-paypal"></i><h3>PayPal</h3><small>kaledtchindo7@gmail.com</small></div></div><div class="form-group"><label>Montant (FCFA)</label><input type="number" id="depositAmount" min="5000" placeholder="Minimum 5 000 FCFA"></div><div class="preset-buttons"><button type="button" class="preset-btn" onclick="setDepositAmount(5000)">5 000</button><button type="button" class="preset-btn" onclick="setDepositAmount(10000)">10 000</button><button type="button" class="preset-btn" onclick="setDepositAmount(25000)">25 000</button><button type="button" class="preset-btn" onclick="setDepositAmount(50000)">50 000</button></div><button class="btn-wave" onclick="processDeposit()">Payer avec Wave</button><p style="font-size:0.7rem; text-align:center;">📱 Envoyez au numéro Wave: <strong>87379715</strong><br>📸 Envoyez la capture sur WhatsApp pour crédit</p><div id="adminDepositPanel" style="margin-top:1rem; display:none;"><hr><p>🔧 Admin : Créditer manuellement</p><input type="email" id="adminUserEmail" placeholder="Email utilisateur"><input type="number" id="adminDepositAmount" placeholder="Montant"><button class="btn-primary" onclick="adminManualCredit()" style="width:100%;">Créditer</button></div></div></div>
+
+    <!-- Retrait -->
+    <div id="withdrawPage" class="page"><h1>📤 Retirer mes gains</h1><div class="stats-grid"><div class="stat-card"><h3>Solde principal</h3><div class="value" id="withdrawBalance">0 FCFA</div></div><div class="stat-card"><h3>Total retiré</h3><div class="value" id="totalWithdrawn">0 FCFA</div></div></div><div class="form-card"><h3>Nouvelle demande</h3><div class="form-group"><label>Montant (FCFA)</label><input type="number" id="withdrawAmountInput" min="10000" max="500000" step="1000" oninput="updateWithdrawPreview()"><small>Min 10 000 | Max 500 000</small></div><div class="confirmation-box"><div class="info-row"><span>Frais (2%) :</span><span id="previewFees">0 FCFA</span></div><div class="info-row"><span>Montant net :</span><span id="previewNet">0 FCFA</span></div></div><div class="form-group"><label>Numéro téléphone</label><input type="tel" id="withdrawPhone"></div><div class="form-group"><label>Opérateur</label><select id="withdrawOperator"><option value="wave">Wave</option><option value="orange">Orange Money</option><option value="mtn">MTN</option><option value="moov">Moov</option></select></div><button class="btn-primary btn-block" onclick="openWithdrawConfirmation()">Demander un retrait</button></div><div class="section"><h2>📜 Historique</h2><table id="withdrawalsTable"><thead><tr><th>Date</th><th>Opérateur</th><th>Montant net</th><th>Statut</th></tr></thead><tbody><tr><td colspan="4" class="empty-state">Aucune demande</td></tr></tbody></table></div><div id="adminWithdrawPanel" style="display:none;"><div class="section"><h2>🔧 Admin retraits</h2><table id="adminWithdrawalsTable"><thead><tr><th>Utilisateur</th><th>Opérateur</th><th>Montant net</th><th>Téléphone</th><th>Action</th></tr></thead><tbody><tr><td colspan="5" class="empty-state">Aucune demande</td></tr></tbody></table></div></div></div>
+
+    <!-- Modal retrait -->
+    <div id="withdrawConfirmModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeWithdrawConfirmModal()">&times;</button><h2>✅ Confirmer</h2><div class="confirmation-box"><div class="info-row"><span>Montant demandé :</span><span id="confirmAmount">0 FCFA</span></div><div class="info-row"><span>Frais :</span><span id="confirmFees">0 FCFA</span></div><div class="info-row"><span>Net :</span><span id="confirmNet">0 FCFA</span></div></div><div><div class="info-row"><span>Opérateur :</span> <span id="confirmOperator">Wave</span></div><div class="info-row"><span>Numéro :</span> <span id="confirmPhone">---</span></div></div><p style="color:#ffc107;">⚠️ Vérifiez votre numéro.</p><div style="display:flex; gap:0.8rem;"><button class="btn" style="background:#555;flex:1;" onclick="closeWithdrawConfirmModal()">Annuler</button><button class="btn-primary" style="flex:1;" onclick="confirmWithdrawRequest()">Confirmer</button></div></div></div>
+
+    <!-- Liens d'affiliation -->
+    <div id="linksPage" class="page"><div class="section-header"><h1>🔗 Mes liens</h1><button class="btn-primary" onclick="openLinkModal()"><i class="fas fa-plus"></i> Nouveau lien</button></div><div class="section"><table id="linksTable"><thead><tr><th>Produit</th><th>Lien</th><th>Clics</th><th>Gains</th><th>Statut</th><th>Actions</th></tr></thead><tbody><tr><td colspan="6" class="empty-state">Aucun lien</td></tr></tbody></table></div></div>
+
+    <!-- Formations -->
+    <div id="formationsPage" class="page"><div class="section-header"><h1><i class="fas fa-graduation-cap"></i> Formations</h1><button class="btn-primary" onclick="showPage('dashboard')">Retour</button></div><div style="display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));"><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/imylC9qyoqg" frameborder="0" allowfullscreen></iframe></div><h3>Introduction à l'affiliation</h3></div><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/Sf9QCHDyNMU" frameborder="0" allowfullscreen></iframe></div><h3>Créer un produit digital</h3></div><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/4L_YSgQSs_Y" frameborder="0" allowfullscreen></iframe></div><h3>Stratégies de vente en ligne</h3></div><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/teudknnt35M" frameborder="0" allowfullscreen></iframe></div><h3>Automatisation et tunnel de vente</h3></div><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/3ykulXZdGKE" frameborder="0" allowfullscreen></iframe></div><h3>Formation à l'affiliation</h3></div><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/sxcl0Ynlluo" frameborder="0" allowfullscreen></iframe></div><h3>Réussir sa formation en ligne</h3></div><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/eMYPW1xQDCg" frameborder="0" allowfullscreen></iframe></div><h3>Générer des leads avec des vidéos</h3></div><div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/Pr-tFEZNP1o" frameborder="0" allowfullscreen></iframe></div><h3>Vendre plus avec des coupons</h3></div></div></div>
+
+    <!-- Ebook -->
+    <div id="ebookPage" class="page"><div class="section-header"><h1><i class="fas fa-book"></i> Nos Ebooks & Formations</h1><button class="btn-primary" onclick="showPage('dashboard')">Retour</button></div><div style="display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));"><div style="background:linear-gradient(145deg,#1e2a5e,#0f172a); border-radius:24px; padding:1.2rem; border:1px solid rgba(255,215,0,0.3);"><i class="fab fa-telegram" style="font-size:2.5rem; color:#4ecdc4;"></i><h3>Pack Monétisation Telegram</h3><p>Méthodes simples pour générer des revenus avec votre chaîne Telegram.</p><div><strong>1 000 FCFA</strong> <span style="text-decoration:line-through;">10 000 FCFA</span></div><div class="payment-buttons"><button class="btn-wave" onclick="initiateEbookPurchase()">Wave</button><a href="https://www.paypal.me/votrecompte/1000" target="_blank" class="btn-primary">PayPal</a></div></div><div style="background:linear-gradient(145deg,#1e2a5e,#0f172a); border-radius:24px; padding:1.2rem; border:1px solid rgba(255,215,0,0.3);"><i class="fas fa-shield-hacker" style="font-size:2.5rem; color:#ff6b6b;"></i><h3>Piratage Informatique pour Débutants</h3><p>Bases de la cybersécurité, techniques d'attaque et de défense.</p><div><strong>5 000 FCFA</strong> <span style="text-decoration:line-through;">15 000 FCFA</span></div><div class="payment-buttons"><button class="btn-wave" onclick="alert('Paiement Wave : envoyez 5 000 FCFA au 87379715')">Wave</button><a href="https://www.paypal.me/votrecompte/5000" target="_blank" class="btn-primary">PayPal</a></div></div><div style="background:linear-gradient(145deg,#1e2a5e,#0f172a); border-radius:24px; padding:1.2rem; border:1px solid rgba(255,215,0,0.3);"><i class="fas fa-chalkboard-user" style="font-size:2.5rem; color:#4ecdc4;"></i><h3>Informatique, Internet et TPE</h3><p>Choisir et mettre en œuvre les bons outils pour entrepreneurs.</p><div><strong>7 500 FCFA</strong> (numérique)</div><div class="payment-buttons"><button class="btn-wave" onclick="alert('Paiement Wave : envoyez 7 500 FCFA au 87379715')">Wave</button><a href="https://www.paypal.me/votrecompte/7500" target="_blank" class="btn-primary">PayPal</a></div></div><div style="background:linear-gradient(145deg,#1e2a5e,#0f172a); border-radius:24px; padding:1.2rem; border:1px solid rgba(255,215,0,0.3);"><i class="fas fa-file-pdf" style="font-size:2.5rem; color:#ff6b6b;"></i><h3>Informatique Générale</h3><p>PDF gratuit. Contactez les auteurs.</p><div><strong class="badge-success">GRATUIT</strong></div><div class="payment-buttons"><a href="mailto:dieumercikok@gmail.com" class="btn-primary">Email</a><a href="https://wa.me/243819090801" target="_blank" class="btn-primary">WhatsApp</a></div></div></div><div class="section"><div class="section-header"><h2><i class="fas fa-link"></i> Mon lien d'affiliation pour le pack Telegram</h2><button class="btn-primary" onclick="createEbookAffiliateLink()">Créer mon lien</button></div><div id="ebookAffiliateArea"><p class="empty-state">Aucun lien.</p></div></div></div>
+</div>
+
+<div id="linkModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeLinkModal()">&times;</button><h2>🔗 Nouveau lien</h2><form id="createLinkForm"><div class="form-group"><label>Nom produit</label><input type="text" id="productName" required></div><div class="form-group"><label>Description</label><textarea id="productDesc" rows="2"></textarea></div><div class="form-group"><label>URL destination</label><input type="url" id="destinationUrl" required></div><div class="form-group"><label>Commission par clic (FCFA)</label><input type="number" id="commissionPerClick" value="500"></div><button type="submit" class="btn-primary btn-block">Créer</button></form></div></div>
+
+<!-- Bouton WhatsApp flottant : lien vers le groupe -->
+<a href="https://chat.whatsapp.com/EGHqESo6baJKbABEDmw5Jk?mode=gi_t" target="_blank" class="whatsapp-float"><i class="fab fa-whatsapp" style="font-size:32px;"></i></a>
+
+<script>
+    // === BASE DE DONNÉES LOCALSTORAGE ===
+    let DB = { users: [], transfers: [], withdrawals: [], links: [], clicks: [] };
+    const STORAGE_KEYS = { USERS: 'ba_users', TRANSFERS: 'ba_transfers', WITHDRAWALS: 'ba_withdrawals', LINKS: 'ba_links', CLICKS: 'ba_clicks' };
+    function saveUsers() { localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(DB.users)); }
+    function saveTransfers() { localStorage.setItem(STORAGE_KEYS.TRANSFERS, JSON.stringify(DB.transfers)); }
+    function saveWithdrawals() { localStorage.setItem(STORAGE_KEYS.WITHDRAWALS, JSON.stringify(DB.withdrawals)); }
+    function saveLinks() { localStorage.setItem(STORAGE_KEYS.LINKS, JSON.stringify(DB.links)); }
+    function saveClicks() { localStorage.setItem(STORAGE_KEYS.CLICKS, JSON.stringify(DB.clicks)); }
+
+    function loadDB() {
+        DB.users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS)) || [];
+        DB.transfers = JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSFERS)) || [];
+        DB.withdrawals = JSON.parse(localStorage.getItem(STORAGE_KEYS.WITHDRAWALS)) || [];
+        DB.links = JSON.parse(localStorage.getItem(STORAGE_KEYS.LINKS)) || [];
+        DB.clicks = JSON.parse(localStorage.getItem(STORAGE_KEYS.CLICKS)) || [];
+
+        // Créer le compte administrateur s'il n'existe pas
+        const adminExists = DB.users.some(u => u.email === 'admin@ads.com');
+        if (!adminExists) {
+            const admin = {
+                id: 'admin_' + Date.now(),
+                username: 'Admin',
+                email: 'admin@ads.com',
+                password: 'admin123',
+                waveNumber: '87379715',
+                balance: 50000,
+                cardCode: 'BAD-ADMIN-0000',
+                referralCode: 'REF-ADMIN',
+                sponsorId: null,
+                createdAt: new Date().toISOString(),
+                totalEarned: 0,
+                totalWithdrawn: 0,
+                isAdmin: true,
+                ebookPurchased: false
+            };
+            DB.users.push(admin);
+            saveUsers();
+        }
+    }
+    loadDB();
+
+    let currentUser = null;
+    let selectedDepositMethod = 'wave';
+    let earningsChart = null;
+    const FEE_PERCENT = 0.02;
+    const SPONSOR_BONUS = 500;
+
+    function formatFCFA(amount) { return (amount || 0).toLocaleString() + ' FCFA'; }
+    function generateCardCode() { return 'BAD-' + Math.random().toString(36).substring(2,6).toUpperCase() + '-' + Math.floor(Math.random()*10000); }
+    function generateUniqueCardCode() { let c; do { c = generateCardCode(); } while(DB.users.some(u=>u.cardCode===c)); return c; }
+    function generateReferralCode() { return 'REF-' + Math.random().toString(36).substring(2,8).toUpperCase(); }
+    function formatDate(iso) { let d = new Date(iso); return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); }
+
+    // Restauration de session
+    function restoreSession() {
+        const savedUserId = localStorage.getItem('currentUserId');
+        if (savedUserId) {
+            const user = DB.users.find(u => u.id === savedUserId);
+            if (user) {
+                currentUser = user;
+                showPage('dashboard');
+                updateAllUI();
+                if (currentUser.isAdmin) loadAllUsersList();
+                return true;
+            } else {
+                localStorage.removeItem('currentUserId');
+            }
+        }
+        return false;
+    }
+
+    function updateAllUI() {
+        if (!currentUser) return;
+        document.getElementById('navbar').style.display = 'flex';
+        document.getElementById('servicesNav').style.display = 'flex';
+        document.getElementById('topLoginBtn').style.display = 'none';
+        document.getElementById('topUserInfo').style.display = 'inline';
+        document.getElementById('topUsername').textContent = currentUser.username;
+        document.getElementById('navUsername').textContent = currentUser.username;
+        const bal = formatFCFA(currentUser.balance);
+        document.getElementById('navBalance').textContent = bal;
+        document.getElementById('dashboardBalance').textContent = bal;
+        document.getElementById('cardBalance').textContent = bal;
+        document.getElementById('transferBalance').textContent = bal;
+        document.getElementById('depositBalance').textContent = bal;
+        document.getElementById('withdrawBalance').textContent = bal;
+        document.getElementById('totalWithdrawnDashboard').textContent = formatFCFA(currentUser.totalWithdrawn || 0);
+        document.getElementById('totalWithdrawn').textContent = formatFCFA(currentUser.totalWithdrawn || 0);
+        document.getElementById('welcomeUsername').textContent = currentUser.username;
+        document.getElementById('memberSince').textContent = new Date(currentUser.createdAt).toLocaleDateString('fr-FR');
+        const referralsCount = DB.users.filter(u => u.sponsorId === currentUser.id).length;
+        document.getElementById('referralCount').textContent = referralsCount;
+        document.getElementById('referralCodeDisplay').textContent = currentUser.referralCode || '---';
+        const userLinks = DB.links.filter(l => l.userId === currentUser.id);
+        document.getElementById('activeLinksCount').textContent = userLinks.filter(l => l.active).length;
+        if (currentUser.isAdmin) {
+            document.getElementById('adminDepositPanel').style.display = 'block';
+            document.getElementById('adminWithdrawPanel').style.display = 'block';
+            document.getElementById('adminUsersSection').style.display = 'block';
+            loadAllUsersList();
+        } else {
+            document.getElementById('adminDepositPanel').style.display = 'none';
+            document.getElementById('adminWithdrawPanel').style.display = 'none';
+            document.getElementById('adminUsersSection').style.display = 'none';
+        }
+        document.getElementById('withdrawPhone').value = currentUser.waveNumber || '';
+    }
+
+    function loadAllUsersList() {
+        if (!currentUser.isAdmin) return;
+        const tbody = document.querySelector('#allUsersTable tbody');
+        const nonAdminUsers = DB.users.filter(u => !u.isAdmin);
+        if (nonAdminUsers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Aucun utilisateur inscrit</td></tr>';
+            return;
+        }
+        let html = '';
+        nonAdminUsers.forEach(u => {
+            const refCount = DB.users.filter(ref => ref.sponsorId === u.id).length;
+            html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${formatFCFA(u.balance)}</td><td>${new Date(u.createdAt).toLocaleDateString()}</td><td>${u.referralCode || '---'}</td><td>${refCount}</td></tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    window.showPage = function(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId + 'Page').classList.add('active');
+        if (currentUser) {
+            updateAllUI();
+            if (pageId === 'dashboard') { loadDashboard(); updateEarningsChart(); }
+            else if (pageId === 'card') loadCardPage();
+            else if (pageId === 'transfer') loadTransferPage();
+            else if (pageId === 'withdraw') loadWithdrawPage();
+            else if (pageId === 'links') loadLinksPage();
+            else if (pageId === 'ebook') loadEbookPage();
+        }
+    };
+    window.showPublicPage = function(page) { if (page === 'home') currentUser ? showPage('dashboard') : showAuthPage(); else alert('BUSINESS ADS - Version Pro'); };
+    window.showAuthPage = function() { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('authPage').classList.add('active'); document.getElementById('servicesNav').style.display = 'none'; };
+    window.showService = function(service) {
+        if (service === 'formations') { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('formationsPage').classList.add('active'); if (currentUser) updateAllUI(); }
+        else if (service === 'ebook') { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('ebookPage').classList.add('active'); if (currentUser) updateAllUI(); }
+        else alert('Service à venir');
+    };
+
+    window.login = function(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPassword').value;
+        const user = DB.users.find(u => u.email === email && u.password === pwd);
+        if (!user) {
+            document.getElementById('authError').textContent = 'Identifiants incorrects.';
+            document.getElementById('authError').style.display = 'block';
+            return;
+        }
+        currentUser = user;
+        localStorage.setItem('currentUserId', user.id);
+        document.getElementById('authPage').classList.remove('active');
+        showPage('dashboard');
+        checkForAffiliateClick();
+        alert('Bienvenue ' + user.username);
+    };
+
+    window.register = function(e) {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const waveNumber = document.getElementById('regWaveNumber').value.trim();
+        const sponsorCode = document.getElementById('regSponsorCode').value.trim().toUpperCase();
+        document.getElementById('authError').style.display = 'none';
+        document.getElementById('authSuccess').style.display = 'none';
+
+        if (DB.users.some(u => u.email === email)) {
+            document.getElementById('authError').textContent = 'Cet email est déjà utilisé.';
+            document.getElementById('authError').style.display = 'block';
+            return;
+        }
+        let sponsorId = null;
+        if (sponsorCode) {
+            const sponsor = DB.users.find(u => u.referralCode === sponsorCode);
+            if (sponsor) sponsorId = sponsor.id;
+        }
+        const newUser = {
+            id: 'user_' + Date.now() + '_' + Math.random().toString(36),
+            username, email, password, waveNumber,
+            balance: 0,
+            cardCode: generateUniqueCardCode(),
+            referralCode: generateReferralCode(),
+            sponsorId: sponsorId,
+            createdAt: new Date().toISOString(),
+            totalEarned: 0,
+            totalWithdrawn: 0,
+            isAdmin: false,
+            ebookPurchased: false
+        };
+        DB.users.push(newUser);
+        if (sponsorId) {
+            const sponsor = DB.users.find(u => u.id === sponsorId);
+            if (sponsor) {
+                sponsor.balance += SPONSOR_BONUS;
+                sponsor.totalEarned = (sponsor.totalEarned || 0) + SPONSOR_BONUS;
+                alert(`Félicitations ! ${username} a utilisé votre code. Vous avez gagné ${SPONSOR_BONUS} FCFA.`);
+            }
+        }
+        saveUsers();
+        document.getElementById('authSuccess').textContent = 'Compte créé avec succès ! Vous pouvez vous connecter.';
+        document.getElementById('authSuccess').style.display = 'block';
+        document.getElementById('registerForm').reset();
+        if (currentUser && currentUser.isAdmin) loadAllUsersList();
+    };
+
+    window.logout = function() { currentUser = null; localStorage.removeItem('currentUserId'); location.reload(); };
+
+    // Carte virtuelle
+    function loadCardPage() {
+        document.getElementById('cardNumberDisplay').textContent = currentUser.cardCode.replace(/(.{4})/g, '$1 ');
+        document.getElementById('cardHolderName').textContent = currentUser.username.toUpperCase();
+        document.getElementById('cardCvv').textContent = Math.floor(Math.random() * 900 + 100);
+        document.getElementById('cardCodeInput').value = currentUser.cardCode;
+        const received = DB.transfers.filter(t => t.toUserId === currentUser.id);
+        const tbody = document.querySelector('#receivedTransfersTable tbody');
+        if (received.length === 0) tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Aucun transfert</td></tr>';
+        else {
+            tbody.innerHTML = received.slice(0, 10).map(t => {
+                const fromUser = DB.users.find(u => u.id === t.fromUserId) || { username: 'Inconnu' };
+                return `<tr><td>${formatDate(t.date)}</td><td>${fromUser.username}</td><td>${formatFCFA(t.amount)}</td></tr>`;
+            }).join('');
+        }
+    }
+    window.copyCardCode = function() { const i = document.getElementById('cardCodeInput'); i.select(); document.execCommand('copy'); alert('Code carte copié !'); };
+
+    // Transfert
+    function loadTransferPage() {
+        const sent = DB.transfers.filter(t => t.fromUserId === currentUser.id);
+        const tbody = document.querySelector('#sentTransfersTable tbody');
+        if (sent.length === 0) tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Aucun transfert</td></tr>';
+        else {
+            tbody.innerHTML = sent.slice(0, 10).map(t => {
+                const toUser = DB.users.find(u => u.id === t.toUserId) || { username: 'Inconnu' };
+                return `<tr><td>${formatDate(t.date)}</td><td>${toUser.username}</td><td>${formatFCFA(t.amount)}</td></tr>`;
+            }).join('');
+        }
+    }
+    window.makeTransfer = function(e) {
+        e.preventDefault();
+        const code = document.getElementById('recipientCardCode').value.trim().toUpperCase();
+        const amount = parseInt(document.getElementById('transferAmount').value);
+        if (amount <= 0 || amount > currentUser.balance) { alert('Montant invalide ou solde insuffisant'); return; }
+        const recipient = DB.users.find(u => u.cardCode === code);
+        if (!recipient || recipient.id === currentUser.id) { alert('Destinataire invalide'); return; }
+        currentUser.balance -= amount;
+        recipient.balance += amount;
+        DB.transfers.push({ id: 'tr_' + Date.now(), fromUserId: currentUser.id, toUserId: recipient.id, amount, date: new Date().toISOString() });
+        saveUsers(); saveTransfers();
+        alert(`Transfert de ${formatFCFA(amount)} à ${recipient.username}`);
+        document.getElementById('transferForm').reset();
+        updateAllUI(); loadTransferPage();
+        if (document.getElementById('cardPage').classList.contains('active')) loadCardPage();
+    };
+
+    // Dépôt
+    window.selectDepositMethod = function(m) { selectedDepositMethod = m; document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected')); document.getElementById(m + 'DepositCard').classList.add('selected'); };
+    window.setDepositAmount = function(v) { document.getElementById('depositAmount').value = v; };
+    window.processDeposit = function() { let a = parseInt(document.getElementById('depositAmount').value); if (a < 5000) alert('Min 5000 FCFA'); else alert(`Envoyez ${formatFCFA(a)} à Wave 87379715 ou PayPal kaledtchindo7@gmail.com`); };
+    window.adminManualCredit = function() {
+        if (!currentUser.isAdmin) return;
+        const email = document.getElementById('adminUserEmail').value.trim();
+        const amt = parseInt(document.getElementById('adminDepositAmount').value);
+        const user = DB.users.find(u => u.email === email);
+        if (user && amt > 0) {
+            user.balance += amt;
+            saveUsers();
+            alert(`Crédité ${formatFCFA(amt)} à ${user.username}`);
+            updateAllUI(); if (currentUser.isAdmin) loadAllUsersList();
+        } else alert('Utilisateur non trouvé');
+    };
+
+    // Retrait
+    window.updateWithdrawPreview = function() { let a = parseFloat(document.getElementById('withdrawAmountInput').value) || 0; let fees = Math.round(a * FEE_PERCENT); document.getElementById('previewFees').textContent = formatFCFA(fees); document.getElementById('previewNet').textContent = formatFCFA(a - fees); };
+    window.openWithdrawConfirmation = function() {
+        let a = parseFloat(document.getElementById('withdrawAmountInput').value);
+        let phone = document.getElementById('withdrawPhone').value.trim();
+        if (a < 10000 || a > 500000 || !phone) { alert('Montant ou téléphone invalide'); return; }
+        if (a > currentUser.balance) { alert('Solde insuffisant'); return; }
+        let fees = Math.round(a * FEE_PERCENT);
+        document.getElementById('confirmAmount').textContent = formatFCFA(a);
+        document.getElementById('confirmFees').textContent = formatFCFA(fees);
+        document.getElementById('confirmNet').textContent = formatFCFA(a - fees);
+        document.getElementById('confirmOperator').textContent = document.getElementById('withdrawOperator').options[document.getElementById('withdrawOperator').selectedIndex].text;
+        document.getElementById('confirmPhone').textContent = phone;
+        document.getElementById('withdrawConfirmModal').style.display = 'flex';
+    };
+    window.closeWithdrawConfirmModal = function() { document.getElementById('withdrawConfirmModal').style.display = 'none'; };
+    window.confirmWithdrawRequest = function() {
+        let a = parseFloat(document.getElementById('withdrawAmountInput').value);
+        let phone = document.getElementById('withdrawPhone').value.trim();
+        let op = document.getElementById('withdrawOperator').value;
+        let fees = Math.round(a * FEE_PERCENT);
+        let net = a - fees;
+        currentUser.balance -= a;
+        currentUser.totalWithdrawn = (currentUser.totalWithdrawn || 0) + net;
+        const adminUser = DB.users.find(u => u.isAdmin === true);
+        if (adminUser && currentUser.id !== adminUser.id) {
+            adminUser.balance += fees;
+            adminUser.totalEarned = (adminUser.totalEarned || 0) + fees;
+        }
+        DB.withdrawals.push({ id: 'wdr_' + Date.now(), userId: currentUser.id, operator: op, phone: phone, amount: a, fees: fees, net: net, status: 'pending', date: new Date().toISOString() });
+        saveUsers(); saveWithdrawals();
+        closeWithdrawConfirmModal();
+        document.getElementById('withdrawAmountInput').value = '';
+        updateWithdrawPreview();
+        updateAllUI(); loadWithdrawPage();
+        alert('✅ Demande de retrait enregistrée.');
+    };
+    function loadWithdrawPage() {
+        updateWithdrawPreview();
+        const userW = DB.withdrawals.filter(w => w.userId === currentUser.id).sort((a, b) => new Date(b.date) - new Date(a.date));
+        const tbody = document.querySelector('#withdrawalsTable tbody');
+        if (userW.length === 0) tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Aucune demande</td></tr>';
+        else {
+            tbody.innerHTML = userW.map(w => {
+                let status = w.status === 'pending' ? '<span class="badge-pending">En attente</span>' : '<span class="badge-success">Validé</span>';
+                let opName = w.operator === 'wave' ? 'Wave' : w.operator;
+                return `<tr><td>${formatDate(w.date)}</td><td>${opName}</td><td>${formatFCFA(w.net)}</td><td>${status}</td></tr>`;
+            }).join('');
+        }
+        if (currentUser.isAdmin) {
+            const pending = DB.withdrawals.filter(w => w.status === 'pending');
+            const admTbody = document.querySelector('#adminWithdrawalsTable tbody');
+            if (pending.length === 0) admTbody.innerHTML = '<table><td colspan="5" class="empty-state">Aucune demande</td></tr>';
+            else {
+                admTbody.innerHTML = pending.map(w => {
+                    const user = DB.users.find(u => u.id === w.userId);
+                    return `<tr><td>${user?.username}</td><td>${w.operator}</td><td>${formatFCFA(w.net)}</td><td>${w.phone}</td><td><button class="btn-primary" onclick="approveWithdrawal('${w.id}')">Valider</button></td></tr>`;
+                }).join('');
+            }
+        }
+    }
+    window.approveWithdrawal = function(id) {
+        if (!currentUser.isAdmin) return;
+        const w = DB.withdrawals.find(w => w.id === id);
+        if (w && w.status === 'pending') {
+            w.status = 'completed';
+            saveWithdrawals();
+            loadWithdrawPage();
+            alert('Retrait validé.');
+        }
+    };
+
+    // Liens d'affiliation
+    function loadLinksPage() {
+        const userLinks = DB.links.filter(l => l.userId === currentUser.id);
+        const tbody = document.querySelector('#linksTable tbody');
+        if (userLinks.length === 0) { tbody.innerHTML = '</tr><td colspan="6" class="empty-state">Aucun lien</td></tr>'; return; }
+        tbody.innerHTML = userLinks.map(link => {
+            const shortUrl = `${window.location.origin}${window.location.pathname}?ref=${link.id}`;
+            const status = link.active ? '<span class="badge-success">Actif</span>' : '<span class="badge-pending">Inactif</span>';
+            return `<tr><td>${link.productName}</td><td><a href="${shortUrl}" target="_blank" style="color:#4ecdc4;">${shortUrl.length > 30 ? shortUrl.substr(0,30)+'…' : shortUrl}</a></td><td>${link.clicks || 0}</td><td>${formatFCFA(link.earnings || 0)}</td><td>${status}</td><td><button class="btn-copy" onclick="copyAffiliateLink('${link.id}')"><i class="fas fa-copy"></i></button> <button class="btn-copy" onclick="toggleLinkStatus('${link.id}')"><i class="fas fa-power-off"></i></button></td></tr>`;
+        }).join('');
+    }
+    window.openLinkModal = function() { document.getElementById('linkModal').style.display = 'flex'; };
+    window.closeLinkModal = function() { document.getElementById('linkModal').style.display = 'none'; };
+    window.createLink = function(e) {
+        e.preventDefault();
+        const newLink = {
+            id: 'link_' + Date.now() + '_' + Math.random().toString(36),
+            userId: currentUser.id,
+            productName: document.getElementById('productName').value,
+            description: document.getElementById('productDesc').value,
+            url: document.getElementById('destinationUrl').value,
+            commission: parseInt(document.getElementById('commissionPerClick').value) || 500,
+            clicks: 0,
+            earnings: 0,
+            active: true,
+            createdAt: new Date().toISOString()
+        };
+        DB.links.push(newLink);
+        saveLinks();
+        closeLinkModal();
+        document.getElementById('createLinkForm').reset();
+        loadLinksPage();
+        updateAllUI();
+        alert('Lien d’affiliation créé avec succès !');
+    };
+    window.copyAffiliateLink = function(linkId) { const url = `${window.location.origin}${window.location.pathname}?ref=${linkId}`; navigator.clipboard?.writeText(url).then(() => alert('Lien copié !')); };
+    window.toggleLinkStatus = function(linkId) { const link = DB.links.find(l => l.id === linkId); if (link) { link.active = !link.active; saveLinks(); loadLinksPage(); alert(link.active ? 'Lien activé' : 'Lien désactivé'); } };
+    function checkForAffiliateClick() {
+        const ref = new URLSearchParams(window.location.search).get('ref');
+        if (!ref || !currentUser) return;
+        const link = DB.links.find(l => l.id === ref);
+        if (!link || !link.active || link.userId === currentUser.id) return;
+        const gain = link.commission;
+        link.clicks = (link.clicks || 0) + 1;
+        link.earnings = (link.earnings || 0) + gain;
+        const owner = DB.users.find(u => u.id === link.userId);
+        if (owner) {
+            owner.balance += gain;
+            owner.totalEarned = (owner.totalEarned || 0) + gain;
+            saveUsers();
+        }
+        DB.clicks.push({ id: 'click_' + Date.now(), linkId: link.id, visitorId: currentUser.id, date: new Date().toISOString(), amount: gain });
+        saveLinks(); saveClicks();
+        setTimeout(() => { window.location.href = link.url; }, 1500);
+        alert(`Clic enregistré ! Redirection dans un instant...`);
+    }
+
+    // Dashboard
+    function loadDashboard() {
+        const userLinks = DB.links.filter(l => l.userId === currentUser.id);
+        const linkIds = userLinks.map(l => l.id);
+        const recentClicks = DB.clicks.filter(c => linkIds.includes(c.linkId)).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        const tbody = document.querySelector('#recentClicksTable tbody');
+        if (recentClicks.length === 0) tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Aucun clic</td></tr>';
+        else {
+            tbody.innerHTML = recentClicks.map(c => {
+                const link = userLinks.find(l => l.id === c.linkId);
+                return `<tr><td>${formatDate(c.date)}</td><td>${link ? link.productName : 'Lien supprimé'}</td><td>${formatFCFA(c.amount)}</td></tr>`;
+            }).join('');
+        }
+        const referrals = DB.users.filter(u => u.sponsorId === currentUser.id);
+        document.getElementById('referralCountDashboard').textContent = referrals.length;
+        const referralEarnings = referrals.length * SPONSOR_BONUS;
+        const clickEarnings = (currentUser.totalEarned || 0) - referralEarnings;
+        document.getElementById('referralEarnings').textContent = formatFCFA(referralEarnings);
+        document.getElementById('clickEarnings').textContent = formatFCFA(clickEarnings);
+        document.getElementById('dashboardEarnings').textContent = formatFCFA(currentUser.totalEarned || 0);
+        document.getElementById('dashboardClicks').textContent = userLinks.reduce((s, l) => s + (l.clicks || 0), 0);
+        const recentRefs = [...referrals].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+        const refTbody = document.querySelector('#recentReferralsTable tbody');
+        if (recentRefs.length === 0) refTbody.innerHTML = '<tr><td colspan="3" class="empty-state">Aucun filleul</td></tr>';
+        else {
+            refTbody.innerHTML = recentRefs.map(r => `<tr><td>${formatDate(r.createdAt)}</td><td>${r.username}</td><td>${r.email}</td></tr>`).join('');
+        }
+        const topLink = [...userLinks].sort((a, b) => (b.earnings || 0) - (a.earnings || 0))[0];
+        const topDiv = document.getElementById('topLinkInfo');
+        if (topLink) topDiv.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><strong>${topLink.productName}</strong><br>${topLink.clicks || 0} clics</div><div>${formatFCFA(topLink.earnings || 0)}</div><button class="btn-copy" onclick="copyAffiliateLink('${topLink.id}')">Copier le lien</button></div>`;
+        else topDiv.innerHTML = '<p class="empty-state">Aucun lien créé.</p>';
+    }
+
+    // Graphique
+    function updateEarningsChart() {
+        const ctx = document.getElementById('earningsChart').getContext('2d');
+        const days = [];
+        const gains = [];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            date.setHours(0, 0, 0, 0);
+            days.push(date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }));
+            const myLinks = DB.links.filter(l => l.userId === currentUser.id);
+            const myClicks = DB.clicks.filter(c => myLinks.some(l => l.id === c.linkId) && new Date(c.date).toDateString() === date.toDateString());
+            let dailyGain = myClicks.reduce((s, c) => s + c.amount, 0);
+            const referrals = DB.users.filter(u => u.sponsorId === currentUser.id && new Date(u.createdAt).toDateString() === date.toDateString());
+            dailyGain += referrals.length * SPONSOR_BONUS;
+            gains.push(dailyGain);
+        }
+        if (earningsChart) earningsChart.destroy();
+        earningsChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: days, datasets: [{ label: 'Gains (FCFA)', data: gains, backgroundColor: '#4ecdc4', borderRadius: 8 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff' } }, x: { ticks: { color: '#fff' } } } }
+        });
+    }
+
+    // Ebook
+    function loadEbookPage() {
+        if (currentUser?.ebookPurchased) document.getElementById('downloadArea').style.display = 'block';
+        else document.getElementById('downloadArea').style.display = 'none';
+        loadEbookAffiliateLink();
+        if (currentUser?.isAdmin) displayAdminPurchaseRequests();
+    }
+    function loadEbookAffiliateLink() {
+        const existing = DB.links.find(l => l.userId === currentUser.id && l.productName === "Pack Monétisation Telegram");
+        const container = document.getElementById('ebookAffiliateArea');
+        if (existing) {
+            const url = `${window.location.origin}${window.location.pathname}?ref=${existing.id}`;
+            container.innerHTML = `<div class="link-copy"><input type="text" value="${url}" readonly id="ebookLinkInput"><button class="btn-copy" onclick="copyEbookLink()">Copier</button></div><p>Clics: ${existing.clicks || 0} | Gains: ${formatFCFA(existing.earnings || 0)}</p><button class="btn-copy" onclick="toggleLinkStatus('${existing.id}'); loadEbookAffiliateLink();">${existing.active ? 'Désactiver' : 'Activer'}</button>`;
+        } else container.innerHTML = '<p class="empty-state">Aucun lien. Cliquez sur "Créer mon lien".</p>';
+    }
+    window.copyEbookLink = function() { const i = document.getElementById('ebookLinkInput'); if (i) { i.select(); document.execCommand('copy'); alert('Lien d’affiliation copié !'); } };
+    window.createEbookAffiliateLink = function() {
+        if (DB.links.some(l => l.userId === currentUser.id && l.productName === "Pack Monétisation Telegram")) { alert('Lien déjà existant'); loadEbookAffiliateLink(); return; }
+        DB.links.push({ id: 'link_ebook_' + Date.now(), userId: currentUser.id, productName: "Pack Monétisation Telegram", description: "Monétisation Telegram", url: "https://www.chariow.com", commission: 500, clicks: 0, earnings: 0, active: true, createdAt: new Date().toISOString() });
+        saveLinks();
+        alert('Lien créé');
+        loadEbookAffiliateLink();
+    };
+    window.initiateEbookPurchase = function() {
+        const phone = document.getElementById('buyerWaveNumber').value.trim();
+        if (!phone) { alert('Entrez votre numéro Wave'); return; }
+        if (confirm(`Envoyez 1000 FCFA au Wave 87379715 depuis ${phone}. Confirmez après paiement.`)) {
+            let requests = JSON.parse(localStorage.getItem('ebook_purchase_requests')) || [];
+            requests.push({ id: Date.now(), userId: currentUser?.id, phone, amount: 1000, status: 'pending', date: new Date().toISOString() });
+            localStorage.setItem('ebook_purchase_requests', JSON.stringify(requests));
+            alert('Demande enregistrée. L’admin validera.');
+            if (currentUser?.isAdmin) displayAdminPurchaseRequests();
+        }
+    };
+    function displayAdminPurchaseRequests() {
+        if (!currentUser?.isAdmin) return;
+        let requests = JSON.parse(localStorage.getItem('ebook_purchase_requests')) || [];
+        const pending = requests.filter(r => r.status === 'pending');
+        const existing = document.getElementById('adminEbookPanel');
+        if (existing) existing.remove();
+        if (pending.length === 0) return;
+        let html = `<div class="section" id="adminEbookPanel"><h3>📋 Demandes d'achat</h3><td><thead><tr><th>Date</th><th>Téléphone</th><th>Montant</th><th>Action</th></tr></thead><tbody>`;
+        pending.forEach(req => { html += `<tr><td>${formatDate(req.date)}</td><td>${req.phone}</td><td>1000 FCFA</td><td><button class="btn-primary" onclick="approvePurchase('${req.id}')">Valider</button></td></tr>`; });
+        html += `</tbody></table></div>`;
+        document.getElementById('ebookPage').insertAdjacentHTML('beforeend', html);
+    }
+    window.approvePurchase = function(id) {
+        let requests = JSON.parse(localStorage.getItem('ebook_purchase_requests')) || [];
+        const req = requests.find(r => r.id == id);
+        if (req && req.status === 'pending') {
+            req.status = 'completed';
+            localStorage.setItem('ebook_purchase_requests', JSON.stringify(requests));
+            if (req.userId) {
+                const user = DB.users.find(u => u.id === req.userId);
+                if (user) { user.ebookPurchased = true; saveUsers(); if (currentUser?.id === user.id) document.getElementById('downloadArea').style.display = 'block'; }
+            }
+            alert(`Achat validé pour ${req.phone}. Envoyez le pack.`);
+            displayAdminPurchaseRequests();
+        }
+    };
+
+    window.exportAllData = function() {
+        const referrals = DB.users.filter(u => u.sponsorId === currentUser.id);
+        const myLinks = DB.links.filter(l => l.userId === currentUser.id);
+        const myClicks = DB.clicks.filter(c => myLinks.some(l => l.id === c.linkId));
+        const myWithdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id);
+        let rows = [];
+        rows.push(['"BUSINESS ADS - Export"'], [`"Date : ${new Date().toLocaleString()}"`], []);
+        rows.push(['"FILLEULS"'], ['Nom', 'Email', 'Date']);
+        referrals.forEach(r => rows.push([r.username, r.email, new Date(r.createdAt).toLocaleString()]));
+        rows.push([]);
+        rows.push(['"CLICS"'], ['Date', 'Produit', 'Gain (FCFA)']);
+        myClicks.forEach(c => { let link = myLinks.find(l => l.id === c.linkId); rows.push([new Date(c.date).toLocaleString(), link ? link.productName : '?', c.amount]); });
+        rows.push([]);
+        rows.push(['"RETRAITS"'], ['Date', 'Montant demandé', 'Frais', 'Net', 'Statut']);
+        myWithdrawals.forEach(w => rows.push([new Date(w.date).toLocaleString(), w.amount, w.fees, w.net, w.status]));
+        rows.push([]);
+        rows.push(['"LIENS"'], ['Nom', 'URL', 'Clics', 'Gains', 'Actif']);
+        myLinks.forEach(l => rows.push([l.productName, l.url, l.clicks || 0, l.earnings || 0, l.active ? 'Oui' : 'Non']));
+        const csv = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'business_ads_export.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    };
+
+    document.getElementById('transferForm')?.addEventListener('submit', window.makeTransfer);
+    document.getElementById('createLinkForm')?.addEventListener('submit', window.createLink);
+    if (!restoreSession()) showAuthPage();
+    checkForAffiliateClick();
+</script>
+</body>
+</html>
